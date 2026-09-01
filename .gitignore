@@ -16,7 +16,7 @@ coverage
 
 # Editor directories and files
 .vscode/*
-!.vscode/extensions.json
+!.vscode/settings.json
 .idea
 *.suo
 *.ntvs*
@@ -38,4 +38,10 @@ __screenshots__/
 # Vite
 *.timestamp-*-*.mjs
 
+# element-plus
+element-plus-auto-imports.d.ts
+element-plus-components.d.ts
+
+# project
 temp
+wiki

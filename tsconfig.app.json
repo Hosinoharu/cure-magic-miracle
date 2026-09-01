@@ -3,6 +3,7 @@
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
+    "lib": ["ES2025", "DOM"],
     // Extra safety for array and object lookups, but may have false positives.
     "noUncheckedIndexedAccess": true,
     // Path mapping for cleaner imports.

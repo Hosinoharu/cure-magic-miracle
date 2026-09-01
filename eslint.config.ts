@@ -4,7 +4,6 @@ import {
   vueTsConfigs,
 } from "@vue/eslint-config-typescript";
 import pluginVue from "eslint-plugin-vue";
-import pluginOxlint from "eslint-plugin-oxlint";
 import skipFormatting from "eslint-config-prettier/flat";
 
 // To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
@@ -18,12 +17,38 @@ export default defineConfigWithVueTs(
     files: ["**/*.{vue,ts,mts,tsx}"],
   },
 
-  globalIgnores(["**/dist/**", "**/dist-ssr/**", "**/coverage/**"]),
+  globalIgnores([
+    "**/dist/**",
+    "**/dist-ssr/**",
+    "**/coverage/**",
+    "**/temp/**",
+  ]),
 
   ...pluginVue.configs["flat/essential"],
   vueTsConfigs.recommended,
 
-  ...pluginOxlint.buildFromOxlintConfigFile(".oxlintrc.json"),
-
   skipFormatting,
+
+  {
+    name: "app/custom-rules",
+    files: ["**/*.{vue,ts,mts,tsx}"],
+    rules: {
+      // 为使用的变量会触发警告，且忽略以 _ 开头的变量
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          args: "all",
+          argsIgnorePattern: "^_",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
+        },
+      ],
+      "@typescript-eslint/no-debugger": "off",
+      "@typescript-eslint/no-this-alias": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
+    },
+  },
 );
