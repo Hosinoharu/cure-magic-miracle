@@ -35,7 +35,7 @@
         target="_blank"
         type="info"
       >
-        反馈建议 - Github
+        问题反馈 - Github
       </el-link>
     </div>
     <el-progress

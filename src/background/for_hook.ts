@@ -80,20 +80,18 @@ const logger = new CureLogger("background/for_hook");
     }
   }
 
-  // #cure-tip 监听普通 tab 页刷新，注入 hook 代码
-  chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    if (changeInfo.status === "loading") {
-      if (!tab.url || is_ignore_tab(tab.id, tab.url)) return;
+  /** 当打开、刷新标签页时，需要注入配置项 */
+  async function inject_hook_when_tab_update(tabId: number, tab_url: string) {
+    if (is_ignore_tab(tabId, tab_url)) return;
 
-      // 如果 tab.url 为 file:/// ，则 .host 属性可能为空哟
-      const tab_host = new URL(tab.url).host || tab.url;
-      TabToHost.set(tabId, tab_host);
+    // 如果 tab.url 为 file:/// ，则 .host 属性可能为空哟
+    const tab_host = new URL(tab_url).host || tab_url;
+    TabToHost.set(tabId, tab_host);
 
-      const setting = await get_tab_hook_setting(tabId, tab_host);
-      await inject_hook(tabId, setting, false);
-      await action_on_setting(tabId, setting);
-    }
-  });
+    const setting = await get_tab_hook_setting(tabId, tab_host);
+    await inject_hook(tabId, setting, false);
+    await action_on_setting(tabId, setting);
+  }
 
   // #cure-tip 监听 iframe 刷新，注入 hook 代码
   chrome.webNavigation.onCommitted.addListener(async details => {
@@ -102,8 +100,10 @@ const logger = new CureLogger("background/for_hook");
     if (is_ignore_tab(tabId, url)) return;
 
     const frameId = details.frameId;
-    // 主页面，已经由 `tabs.onUpdated` 处理过了，无需重复处理
-    if (frameId === 0) return;
+    // 也就是 main frame
+    if (frameId === 0) {
+      return inject_hook_when_tab_update(tabId, url);
+    }
 
     // 这里指定 host 为主 frame 的链接！
     const tab_host = TabToHost.get(tabId);
@@ -224,14 +224,19 @@ const logger = new CureLogger("background/for_hook");
   //#endregion
 
   // #cure-tip 当页面刷新时 需要检查该标签页是否开启了hook，从而让插件切换状态
-  chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
-    if (changeInfo.status === "loading") {
-      if (is_ignore_tab(tab.id, tab.url)) return;
-      try {
-        await check_enable_hook(tab);
-      } catch (e) {
-        logger.log_with_logo("error", "check enable hook error", e);
-      }
+  // [为什么不使用 chrome.tabs.onUpdated](https://github.com/Hosinoharu/cure-magic-miracle/issues/1)
+  chrome.webNavigation.onCommitted.addListener(async details => {
+    // 只处理 main frame
+    if (details.frameId !== 0) return;
+
+    const tabId = details.tabId;
+    const url = details.url;
+    if (is_ignore_tab(tabId, url)) return;
+    try {
+      const tab = await chrome.tabs.get(tabId);
+      await check_enable_hook(tab);
+    } catch (e) {
+      logger.log_with_logo("error", "check enable hook error", e);
     }
   });
 })();
