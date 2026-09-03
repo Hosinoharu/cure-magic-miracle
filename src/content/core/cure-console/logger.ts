@@ -254,7 +254,7 @@ export function log_with_stack(
 /** 脚本注入完成时调用哟 */
 export function log_after_init() {
   raw_log(
-    `%c ヾ(≧▽≦*)o Cure☆Miracle ♡ [${cure_share.current_cure_url}]  `,
+    `%c ヾ(≧▽≦*)o Cure Magic ☆ Miracle ♡ [${cure_share.current_cure_url}]  `,
     `background-color:${cure_wink};font-size:1.5em;border-radius:6px;padding:6px`,
   );
 }

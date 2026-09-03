@@ -1,0 +1,58 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --cure-idol: #fe5b9b;
+  --cure-wink: #4060ee;
+  --cure-kyun: #cd5ffb;
+  --cure-zukyoon: #a9f9b5;
+  --cure-kiss: #9988f1;
+
+  --default-split-line-color: #4c4d4f;
+  --default-dark-star-color: #4c4d4f;
+  --default-light-star-color: #f8f27e;
+
+  --default-body-bg-color: #222;
+  /* 原本使用 .6em，但 chrome 浏览器显示字体太小，
+    最后经过调试，用 vw 单位设置 */
+  --default-font-size: 3vw;
+  --default-font-color: #ccc;
+  --default-light-font-color: var(--cure-idol);
+
+  /* 其它元素使用的背景颜色，和 body 的背景颜色区分开来 */
+  --default-bg-color: #333;
+  --default-border-color: #666;
+
+  /* 一个设置项的行高度 */
+  --default-settings-row-height: 3em;
+
+  /** 功能开启时显示的颜色 */
+  --default-switch-on: #13ce66;
+  /** 功能开启时需要警告时的颜色 */
+  --default-switch-on-warn: #ff4949;
+
+  --default-font-family:
+    consolas, "Microsoft YaHei", "Courier New", Courier, monospace;
+}
+
+body {
+  font-family: var(--default-font-family);
+}
+
+/* 去除 input[number] 右侧的上下增减箭头 */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* el-tooltip 组件。
+首先想让其颜色可以自定义，其次背景颜色固定为默认值，
+不清楚为什么【在我已经使用 dark theme 时，tooltip 组件的背景颜色还是白色】
+*/
+.el-tooltip {
+  color: var(--cure-kyun) !important;
+  background-color: var(--el-bg-color) !important;
+}

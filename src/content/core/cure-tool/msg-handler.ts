@@ -44,7 +44,6 @@ export function init_all_setting(s: AllSetting) {
       ? false
       : s.cure_setting.debug_after_init;
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   delete s.cure_setting.debug_after_init;
 

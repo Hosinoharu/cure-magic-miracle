@@ -42,7 +42,7 @@ const manifest: Browser.runtime.ManifestV3 = {
       match_origin_as_fallback: true,
     },
   ],
-  permissions: ["tabs", "storage", "scripting", "webNavigation"],
+  permissions: ["tabs", "storage", "scripting", "webNavigation", "userScripts"],
   host_permissions: ["<all_urls>"],
 };
 

@@ -123,7 +123,6 @@ export function save_proto_method<T>(obj: T) {
 
     if (typeof obj[n] === "function") {
       try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         result[n] = save_raw_method(obj[n]);
       } catch {}

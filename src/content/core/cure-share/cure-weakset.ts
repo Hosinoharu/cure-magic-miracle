@@ -12,7 +12,6 @@ export class CureWeakSet<K extends object> {
   #set = new raw_WeakSet<K>();
 
   constructor(data?: Iterable<K>) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this.#set = new raw_WeakSet(data);
   }

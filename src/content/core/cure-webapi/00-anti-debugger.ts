@@ -348,7 +348,7 @@ function hook_defineProperty() {
   });
 
   // #cure-tip hook-__defineGetter__-keepOn
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
   // @ts-ignore
   if (Object.prototype.__defineGetter__) {
     cure.tool.setting_binder.create_hooker_switcher({

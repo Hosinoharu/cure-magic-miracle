@@ -7,7 +7,7 @@ import { maximum_call_stack_size } from "./constant";
 import * as proxy_handler from "./proxy-handler";
 
 const raw_Error = Error;
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
 // @ts-ignore
 const raw_stackTraceLimit = Error.stackTraceLimit;
 
@@ -97,7 +97,6 @@ function parsed_stack_to_string(parsed: ParsedStack) {
 
 // #region 输出未被捕获的报错信息
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 function curemiracle_prepare_stack(e: Error, _call_site: NodeJS.CallSite[]) {
   const parsed = parse_stack_without_self(e.stack);
@@ -141,7 +140,7 @@ function set_stack_trace_limit(deep = maximum_call_stack_size) {
     // 这里增加 10 是为了容纳堆栈中存在插件本身的调用
     // 也就是说，本来想获取 100 层堆栈，因为去除插件自身的调用
     // 最终获取到的堆栈可能只有 95 层，影响后面的判断，所以这里增加 10
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
     // @ts-ignore
     Error.stackTraceLimit = deep + 10;
   }
@@ -149,7 +148,6 @@ function set_stack_trace_limit(deep = maximum_call_stack_size) {
 
 function reset_stack_trace_limit() {
   if (raw_stackTraceLimit !== undefined) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     Error.stackTraceLimit = raw_stackTraceLimit;
   }

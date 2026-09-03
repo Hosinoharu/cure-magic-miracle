@@ -13,7 +13,6 @@ import Components from "unplugin-vue-components/vite";
 import path from "path";
 
 const dirname = import.meta.dirname;
-const popup_input = "./src/popup/index.html";
 
 /**
  * 用法 `vite --mode <value>`
@@ -27,7 +26,7 @@ export default defineConfig(({ mode, command }) => {
 
   switch (mode) {
     case "popup":
-      input = popup_input;
+      input = "./src/popup/index.html";
       break;
     default:
       throw new Error("unknown mode value: " + mode);

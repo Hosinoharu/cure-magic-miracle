@@ -1,3 +1,3 @@
-export const extension_name = "CureMiracle";
-/** 注入到网页全局作用域下的名字 */
-export const expose_name = "cure_miracle";
+export * as hook_script_helper from "./hook_script_helper";
+export * from "./storage";
+export * from "./setting";

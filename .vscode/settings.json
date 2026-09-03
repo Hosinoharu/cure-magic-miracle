@@ -1,10 +1,10 @@
 {
   "files.exclude": {
-    "**/node_modules": false,
+    "**/node_modules": true,
     "dist": true,
-    "doc": false,
-    "wiki": false,
-    "temp": false,
+    "doc": true,
+    "wiki": true,
+    "temp": true,
     "*.{json,md,js,ts}": false
   },
   "editor.tabSize": 2,

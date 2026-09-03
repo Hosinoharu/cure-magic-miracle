@@ -49,6 +49,7 @@ export default defineConfigWithVueTs(
       "@typescript-eslint/no-debugger": "off",
       "@typescript-eslint/no-this-alias": "off",
       "@typescript-eslint/no-unused-expressions": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
     },
   },
 );

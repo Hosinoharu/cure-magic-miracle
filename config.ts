@@ -10,6 +10,7 @@ import Components from "unplugin-vue-components/vite";
 import { InlineConfig, type Plugin } from "vite";
 import pkg from "./package.json";
 import { get_manifest } from "./src/manifest";
+import { expose_name } from "./src/shared/setting";
 
 // #region init variables
 
@@ -99,6 +100,11 @@ export function get_content_config(target: "main" | "isolated") {
     isolated: path.join(manifest_dir, "content/isolated.js"),
   };
 
+  // 对于 main.js 需要保证它只会被执行一次（也就是 hook 代码只能执行一次）
+  // 具体原因见 [doc/about_inject.md]
+  /** 最终构建成 iife 函数的名称 */
+  const iife_name = "CureMagicMain";
+
   const config: InlineConfig = {
     configFile: false,
     build: {
@@ -109,7 +115,9 @@ export function get_content_config(target: "main" | "isolated") {
         output: {
           entryFileNames: "[name].js",
           format: "iife",
-          comments: false,
+          name: target === "main" ? iife_name : undefined,
+          // iife 顶部的内容，避免重复注入时，二次调用
+          intro: `if(globalThis["${expose_name}"]!==undefined){return};`,
           keepNames: true,
         },
       },

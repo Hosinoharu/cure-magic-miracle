@@ -103,7 +103,6 @@ export function copy_frozen_obj(obj: object) {
 export function is_top_frame() {
   let r = false;
   try {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     r = globalThis === globalThis.top;
   } catch {}

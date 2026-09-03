@@ -134,7 +134,7 @@ export function create_hooker_switcher({
   ) {
     hooker.release();
   }
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
   // @ts-ignore
   cure_hooked[setting] = hooker.init(init_obj);
   const cancel_func = keep_on
