@@ -27,62 +27,62 @@ class HookSettingManager
     },
     // #cure-tip 默认提供一些 API 的 hook 哟
     hooker_setting: {
-      "JSON.stringify": {
-        on: false,
-        target: "JSON",
-        property: "stringify",
-        desc: "JSON.stringify",
-        type: "hook-method",
-        getter: {
-          log: { on: false, func: "" },
-          debugger_: { on: false, func: "" },
-          handler: { on: false, func: "" },
-        },
-        setter: {
-          log: { on: false, func: "" },
-          debugger_: { on: false, func: "" },
-          handler: { on: false, func: "" },
-        },
-        call_param: {
-          log: { on: true, func: "" },
-          debugger_: { on: false, func: "" },
-          handler: { on: false, func: "" },
-        },
-        call_return: {
-          log: { on: true, func: "" },
-          debugger_: { on: false, func: "" },
-          handler: { on: false, func: "" },
-        },
-        call: { on: false, func: "" },
-      },
-      "JSON.parse": {
-        on: false,
-        target: "JSON",
-        property: "parse",
-        desc: "JSON.parse",
-        type: "hook-method",
-        getter: {
-          log: { on: false, func: "" },
-          debugger_: { on: false, func: "" },
-          handler: { on: false, func: "" },
-        },
-        setter: {
-          log: { on: false, func: "" },
-          debugger_: { on: false, func: "" },
-          handler: { on: false, func: "" },
-        },
-        call_param: {
-          log: { on: true, func: "" },
-          debugger_: { on: false, func: "" },
-          handler: { on: false, func: "" },
-        },
-        call_return: {
-          log: { on: true, func: "" },
-          debugger_: { on: false, func: "" },
-          handler: { on: false, func: "" },
-        },
-        call: { on: false, func: "" },
-      },
+      // "JSON.stringify": {
+      //   on: false,
+      //   target: "JSON",
+      //   property: "stringify",
+      //   desc: "JSON.stringify",
+      //   type: "hook-method",
+      //   getter: {
+      //     log: { on: false, func: "" },
+      //     debugger_: { on: false, func: "" },
+      //     handler: { on: false, func: "" },
+      //   },
+      //   setter: {
+      //     log: { on: false, func: "" },
+      //     debugger_: { on: false, func: "" },
+      //     handler: { on: false, func: "" },
+      //   },
+      //   call_param: {
+      //     log: { on: true, func: "" },
+      //     debugger_: { on: false, func: "" },
+      //     handler: { on: false, func: "" },
+      //   },
+      //   call_return: {
+      //     log: { on: true, func: "" },
+      //     debugger_: { on: false, func: "" },
+      //     handler: { on: false, func: "" },
+      //   },
+      //   call: { on: false, func: "" },
+      // },
+      // "JSON.parse": {
+      //   on: false,
+      //   target: "JSON",
+      //   property: "parse",
+      //   desc: "JSON.parse",
+      //   type: "hook-method",
+      //   getter: {
+      //     log: { on: false, func: "" },
+      //     debugger_: { on: false, func: "" },
+      //     handler: { on: false, func: "" },
+      //   },
+      //   setter: {
+      //     log: { on: false, func: "" },
+      //     debugger_: { on: false, func: "" },
+      //     handler: { on: false, func: "" },
+      //   },
+      //   call_param: {
+      //     log: { on: true, func: "" },
+      //     debugger_: { on: false, func: "" },
+      //     handler: { on: false, func: "" },
+      //   },
+      //   call_return: {
+      //     log: { on: true, func: "" },
+      //     debugger_: { on: false, func: "" },
+      //     handler: { on: false, func: "" },
+      //   },
+      //   call: { on: false, func: "" },
+      // },
     },
   };
 

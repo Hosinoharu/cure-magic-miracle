@@ -11,7 +11,6 @@ import { BasicHooker, BasicPropertyHooker, empty_str } from "./base";
 export class PropertyValueHooker extends BasicHooker {
   constructor(obj: object, property: PropertyKey, des: string) {
     super(obj, property, des);
-    this.init_raw_value();
   }
 
   /** 在 hook 属性时本函数基本无用 */
@@ -90,9 +89,7 @@ export class PropertyGetterSetterHooker extends BasicPropertyHooker {
     /** 说明它是来自于哪个 PropertyHooker 控制的 */
     private bind_property_hooker: BindHooker,
   ) {
-    super(target, empty_str, des);
-    this.is_single_obj = true;
-    this.init_raw_value();
+    super(target, empty_str, des, true);
   }
   // 需要重写函数调用时的输出嘛
   protected override curemiracle_apply(

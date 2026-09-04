@@ -7,8 +7,6 @@ import { listen_set_cookie } from "./for_popup";
 
 const logger = new CureLogger("background/for_hook");
 
-// #region 初始化注入hook代码
-
 /** 整体注入逻辑，见 `doc/about_inject.md` 文档 */
 (function init_inject_hook() {
   /** 记录 tab 页对应的 host 地址哟，注入 iframe 时可以找到其对应的标签页配置项
@@ -32,7 +30,6 @@ const logger = new CureLogger("background/for_hook");
   ) {
     try {
       const all_frames = frameId === undefined;
-
       // @ts-ignore
       const target: chrome.userScripts.InjectionTarget = {
         tabId,
@@ -50,7 +47,6 @@ const logger = new CureLogger("background/for_hook");
 
       await chrome.userScripts.execute({
         target,
-
         // @ts-ignore
         js,
         world: "MAIN",
@@ -118,10 +114,6 @@ const logger = new CureLogger("background/for_hook");
   });
 })();
 
-// #endregion
-
-// #region 展示hook功能的开与关
-
 // 当前标签页开启了 hook 功能时，在插件上显示一个小图标咯
 (function show_hook_state() {
   // #cure-tip 监听 tab 页关闭 清空该 tabId 对应的 storage 咯
@@ -135,12 +127,14 @@ const logger = new CureLogger("background/for_hook");
     );
   });
 
-  // #region 预定义常量
+  // #region constants
 
   /** hook 功能关闭时显示的文字 */
   const default_off_text = "";
   /** hook 功能开启时显示的文字 */
-  const default_on_text = "Hook";
+  const default_on_text = "ON";
+  /** hook 功能关闭时显示的文字颜色 */
+  const default_on_text_color = "#fff";
   /** hook 功能关闭时显示的背景颜色 */
   const default_off_bgcolor: chrome.extensionTypes.ColorArray = [0, 0, 0, 0];
   /** hook 功能开启时显示的背景颜色 */
@@ -148,7 +142,7 @@ const logger = new CureLogger("background/for_hook");
 
   // #endregion
 
-  // #region 辅助函数
+  // #region helper functions
 
   /** 当插件关闭功能时调用这个重置状态，不设置 tabId 表示对所有 tab 页有效 */
   async function off_state(tabId?: number) {
@@ -164,6 +158,10 @@ const logger = new CureLogger("background/for_hook");
     await chrome.action.setBadgeText({ text: default_on_text, tabId });
     await chrome.action.setBadgeBackgroundColor({
       color: default_on_bgcolor,
+      tabId,
+    });
+    await chrome.action.setBadgeTextColor({
+      color: default_on_text_color,
       tabId,
     });
   }
@@ -240,5 +238,3 @@ const logger = new CureLogger("background/for_hook");
     }
   });
 })();
-
-// #endregion

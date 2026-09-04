@@ -88,7 +88,7 @@ export const useCureSettingStore = defineStore("cure_setting", () => {
         // 因为是立即注入嘛，现在网站断点了，可不就注入的代码也被卡住了！
         hook_script_helper.change_cure_setting(tabId, key, _value);
 
-        // #tag 针对某些特殊设置项，需要额外处理
+        // #cure-tip 针对某些特殊设置项，需要额外处理
         if (!(await action_on_setting(key as keyof CureSetting, _value))) {
           ElMessage.error(`设置 ${key} 之后的处理出错哟~~`);
         }
@@ -99,7 +99,7 @@ export const useCureSettingStore = defineStore("cure_setting", () => {
     _last_setting.value = { ...newValue };
   }
 
-  // #tag 监听配置项变动，实时保存到chrome.storage中并作用到网页中
+  // #cure-tip 监听配置项变动，实时保存到chrome.storage中并作用到网页中
   watch(curr_cure_setting, debounce(watch_cure_setting, 300));
 
   /** 还原所有 cure_setting 配置 —— 但保留 enable_hook 的状态 */

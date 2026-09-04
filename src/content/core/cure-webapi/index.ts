@@ -1,17 +1,17 @@
 import cure from "./cure";
 import { expose_name } from "@/shared";
 import { anti_debugger_00 } from "./00-anti-debugger";
-// import { normal_01 } from "./01-normal";
-// import { freeze_02 } from "./02-freeze";
-// import { hook_worker_03 } from "./03-worker";
-// import { hook_document_04 } from "./04-document";
+import { normal_01 } from "./01-normal";
+import { freeze_02 } from "./02-freeze";
+import { hook_worker_03 } from "./03-worker";
+import { hook_document_04 } from "./04-document";
 
 function main() {
   anti_debugger_00();
-  // normal_01();
-  // freeze_02();
-  // hook_worker_03();
-  // hook_document_04();
+  normal_01();
+  freeze_02();
+  hook_worker_03();
+  hook_document_04();
 }
 
 // 尽可能注入到 globalThis 原型链上！而不是 globalThis 自身哟

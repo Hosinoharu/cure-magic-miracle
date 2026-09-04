@@ -36,7 +36,7 @@ export const useExtensionSettingStore = defineStore("extension_setting", () => {
     end_init = true;
   }
 
-  // #tag 监听配置项变动，实时保存到chrome.storage中并作用到网页中
+  // #cure-tip 监听配置项变动，实时保存到chrome.storage中并作用到网页中
   watch(curr_extension_setting, async (newValue: Partial<ExtensionSetting>) => {
     if (!end_init) return;
 

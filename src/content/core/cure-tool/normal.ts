@@ -13,7 +13,7 @@ export const get_hookid = (() => {
 /** 当禁用所有断点的时候，为了能让 Hook 代码断点，所以使用了 XHR 断点！*/
 export function curedebug() {
   if (!cure_setting.cure_debug) return;
-  const url = `chrome-extension://${cure_setting.extension_id}/third-code/curedebug.txt`;
+  const url = `chrome-extension://${cure_setting.extension_id}/static/curedebug.txt`;
   new cure_share.CurePromise(cure_share.XHRFunc.fetch(url))
     .then(() => {})
     .catch(() => {});

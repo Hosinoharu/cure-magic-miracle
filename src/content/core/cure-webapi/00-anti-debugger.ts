@@ -594,7 +594,7 @@ function hook_SetPrototypeOf() {
   }
 
   cure.tool.setting_binder.create_hooker_switcher({
-    setting: "Object_setPrototypeOf",
+    setting: "Object.setPrototypeOf",
     obj: Object,
     property: "setPrototypeOf",
     des: "Object.setPrototypeOf",
@@ -606,7 +606,7 @@ function hook_SetPrototypeOf() {
     default_value: true,
   });
   cure.tool.setting_binder.create_hooker_switcher({
-    setting: "Reflect_setPrototypeOf",
+    setting: "Reflect.setPrototypeOf",
     obj: Reflect,
     property: "setPrototypeOf",
     des: "Reflect.setPrototypeOf",
@@ -838,7 +838,7 @@ function stop_redirect() {
 /** 解决 toString 检测  hook-Function.prototype.toString-keepOn */
 function hook_Function_toString() {
   cure.tool.setting_binder.create_hooker_switcher({
-    setting: "Function_p_toString",
+    setting: "Function.prototype.toString",
     obj: Function.prototype,
     property: "toString",
     des: "Function.prototype.toString",

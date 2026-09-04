@@ -185,9 +185,9 @@ export class CureError extends Error {
 
 const random_func = crypto.randomUUID.bind(crypto);
 
-/** 生成 5 位长度的随机字符串 */
-export function random_id() {
-  return StringFunc.slice(random_func(), 0, 5);
+/** 生成指定长度的随机字符串 */
+export function random_id(length = 6) {
+  return StringFunc.slice(random_func(), 0, length);
 }
 
 export const ElseFunc = create_clean_object(

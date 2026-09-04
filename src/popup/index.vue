@@ -66,7 +66,7 @@ function toogle_hook_state() {
   });
 }
 
-// #tag 组件初始化 获取配置项，并展示hook状态
+// #cure-tip 组件初始化 获取配置项，并展示hook状态
 onMounted(async () => {
   await cure_setting_store.init();
 });

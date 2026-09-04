@@ -187,7 +187,7 @@ main section {
   font-size: var(--default-lite-star-size);
 }
 
-/* #tag 小星星点亮后的状态 */
+/* #cure-tip 小星星点亮后的状态 */
 .lite-star-active {
   filter: drop-shadow(0 0 3px);
   animation: lite_star_rotate 2s linear infinite;

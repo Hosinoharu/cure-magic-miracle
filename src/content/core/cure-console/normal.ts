@@ -59,7 +59,6 @@ function clear_timer(
     start = 1;
     if (end === undefined) {
       // 获取当前的 id 到了哪了
-
       // @ts-ignore
       end = (over + func(() => {}, 100000)) as number;
     }

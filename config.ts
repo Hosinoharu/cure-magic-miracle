@@ -7,7 +7,7 @@ import path from "path";
 import AutoImport from "unplugin-auto-import/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import Components from "unplugin-vue-components/vite";
-import { InlineConfig, type Plugin } from "vite";
+import { InlineConfig, PluginOption, type Plugin } from "vite";
 import pkg from "./package.json";
 import { get_manifest } from "./src/manifest";
 import { expose_name } from "./src/shared/setting";
@@ -103,10 +103,11 @@ export function get_content_config(target: "main" | "isolated") {
   // 对于 main.js 需要保证它只会被执行一次（也就是 hook 代码只能执行一次）
   // 具体原因见 [doc/about_inject.md]
   /** 最终构建成 iife 函数的名称 */
-  const iife_name = "CureMagicMain";
+  const iife_name = "CureMiracleMain";
 
   const config: InlineConfig = {
     configFile: false,
+    plugins: [vite_plugin_set_iife_name(iife_name)],
     build: {
       outDir: path.join(out_dir, "content"),
       emptyOutDir: false,
@@ -117,7 +118,15 @@ export function get_content_config(target: "main" | "isolated") {
           format: "iife",
           name: target === "main" ? iife_name : undefined,
           // iife 顶部的内容，避免重复注入时，二次调用
-          intro: `if(globalThis["${expose_name}"]!==undefined){return};`,
+          intro:
+            target === "main"
+              ? `if(globalThis["${expose_name}"]!==undefined){return};`
+              : undefined,
+          // 不优化变量名，方便调试
+          minify: {
+            mangle: false,
+            compress: true,
+          },
           keepNames: true,
         },
       },
@@ -130,6 +139,25 @@ export function get_content_config(target: "main" | "isolated") {
   };
 
   return config;
+}
+
+/** 设置 iife 构建时的函数名称 */
+function vite_plugin_set_iife_name(name: string): PluginOption {
+  const code = `(function ${name}(){`;
+  const pattern = `(function(){`;
+
+  return {
+    name: "vite-plugin-check-hook",
+
+    generateBundle(_options, bundle) {
+      for (const fileName in bundle) {
+        // @ts-ignore
+        const raw_code = bundle[fileName].code;
+        // @ts-ignore
+        bundle[fileName].code = raw_code.replace(pattern, code);
+      }
+    },
+  } as PluginOption;
 }
 
 // #endregion

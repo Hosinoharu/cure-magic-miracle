@@ -56,7 +56,7 @@
     </el-tooltip>
   </el-button-group>
 
-  <!-- #tag todo -->
+  <!-- #cure-tip todo -->
 
   <!-- 展示当前 Tab 或者网站使用配置项的名称 -->
   <el-card shadow="never">

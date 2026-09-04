@@ -84,7 +84,7 @@ main {
   margin-bottom: var(--star-altitude);
 }
 
-/* #tag 点亮魔法棒 */
+/* #cure-tip 点亮魔法棒 */
 .active {
   animation: shine 0.5s infinite alternate;
 }

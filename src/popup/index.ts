@@ -1,4 +1,4 @@
-import "@/shared/test-ui";
+import "@/shared/test_ui";
 
 import { createApp } from "vue";
 import { createPinia } from "pinia";

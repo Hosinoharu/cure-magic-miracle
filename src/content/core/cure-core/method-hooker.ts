@@ -266,10 +266,6 @@ export class MethodHooker
     is_single_obj = false,
   ) {
     super(obj, property, des, is_single_obj);
-    // 没有 getter/setter 时才能初始化
-    if (!this.has_getter_or_setter) {
-      this.release_value = this.raw_value;
-    }
     // 函数对象通常不关心它访问了哪个属性成员，
     this.set_getter_logger(false);
     this.set_setter_logger(false);

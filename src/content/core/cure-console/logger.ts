@@ -39,7 +39,7 @@ const op_color: Record<Operation, string> = {
 const op_style_prefix = "font-weight:bold; font-size:1.5em";
 
 /** 用于输出时的样式，配合 `log_with_custom_logo` 使用 */
-const preset_styles = {
+export const preset_styles = {
   default: `color:${cure_kyun}`,
   cure_idol: `color:${cure_idol};`,
   cure_wink: `color:${cure_wink};`,

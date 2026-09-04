@@ -40,9 +40,6 @@ export abstract class BasicHooker implements ICureHooker {
   protected get release_value() {
     return this.#release_value || this.#raw_value;
   }
-  protected set release_value(v: unknown) {
-    this.#release_value = v;
-  }
 
   /** 记录被 hook 属性的原始属性描述符。
    * 如果取值为 `undefined`，说明要 hook 的属性并不存在于该对象上！
@@ -76,10 +73,7 @@ export abstract class BasicHooker implements ICureHooker {
    * 如果 is_single_obj 为 true，那么 property 会是一个描述性字符串，通常为 _obj 的名字哟。
    * 此时只能通过调用 .get_hooker() 获取一个 Proxy 对象进行赋值。
    */
-  #is_single_obj = false;
-  protected set is_single_obj(v: boolean) {
-    this.#is_single_obj = v;
-  }
+  readonly #is_single_obj;
 
   /** 用于标记是否进行了 hook，避免重新 hook。为 true 表示已经 hook 了 */
   #is_hooked = false;
@@ -112,17 +106,21 @@ export abstract class BasicHooker implements ICureHooker {
     private readonly obj: object,
     private readonly property: PropertyKey,
     protected readonly des: string,
+    is_single_obj = false,
   ) {
     this.#getter_logger = new CureLogger("get", this.des, true);
     this.#setter_logger = new CureLogger("set", this.des, true);
+    this.#is_single_obj = is_single_obj;
   }
 
-  // #region handle raw_value
-
-  /** 初始化 raw_value，以及属性描述符。必须在子类的构造函数中调用！ */
-  protected init_raw_value() {
+  /** 初始化 raw_value，以及属性描述符。必须在 `hook_it` 中调用！
+   *
+   * 也就是说，**在每次开始 `hook` 时，需要重新获取其 raw_value` 才行！
+   */
+  #init_raw_value() {
     if (this.#is_single_obj) {
       this.#raw_value = this.obj;
+      this.#release_value = this.obj;
       return;
     }
 
@@ -139,10 +137,9 @@ export abstract class BasicHooker implements ICureHooker {
     // 因为 obj[property] 的值后续可能被修改，必须实时获取最新的值
     if (!this.has_getter_or_setter) {
       this.#raw_value = cure_share.ReflectFunc.get(this.obj, this.property);
+      this.#release_value = this.#raw_value;
     }
   }
-
-  // #endregion
 
   // #region handle get/set logger
 
@@ -373,6 +370,20 @@ export abstract class BasicHooker implements ICureHooker {
   /** 用于在 hook 对象之前调用，比如 hook 自身属性、更新 t.raw_value 等等
    * 在 is_single_obj 为 true 时返回被处理过的 t._raw_value */
   protected abstract get_hooker(): unknown;
+  /** 在 get_hooker 之前进行一些检查，子类必须在 get_hooker 之前调用它 */
+  protected before_get_hooker() {
+    this.#init_raw_value();
+    // 实践中碰到的情况：
+    // 1. obj[property] 被 hook 过（居然没有监测到重复 hook），所以它具备 getter/setter
+    // 2. 而初始化的时候，如果具备 getter/setter 将不再设置 _raw_value 值
+    // 3. 因为调用 getter/setter 涉及到 this 的问题
+    if (this.raw_value === undefined) {
+      throw new cure_share.CureError(
+        "raw_value is undefined! maybe obj[property] is hooked",
+      );
+    }
+  }
+
   /** 在 hook 函数时重写了它的 .prototype.constructor 属性，当 release hooker 时，需要调用本函数来重置咯。
    *
    * **本方法仅留给 hook 对象时重写！**
@@ -508,6 +519,8 @@ export abstract class BasicHooker implements ICureHooker {
   }
 
   release() {
+    if (this.#is_released()) return this;
+
     if (this.#is_hooked) {
       this.unhook_it();
       this.#is_hooked = false;
@@ -531,7 +544,29 @@ export abstract class BasicHooker implements ICureHooker {
       });
     }
 
+    this.#after_release();
     return this;
+  }
+
+  #is_released() {
+    return (
+      this.#raw_value === undefined &&
+      this.#release_value === undefined &&
+      this.#raw_getter === undefined &&
+      this.#raw_setter === undefined
+    );
+  }
+
+  /** release 之后重置关于 hook 的状态 */
+  #after_release() {
+    this.#raw_value = undefined;
+    this.#release_value = undefined;
+    this.#raw_getter = undefined;
+    this.#raw_setter = undefined;
+    this.#raw_descriptor = undefined;
+    this.#no_intercept = false;
+    this.#is_hooked = false;
+    this.reset_log_state();
   }
 }
 
@@ -543,9 +578,7 @@ export class BasicPropertyHooker extends BasicHooker {
     des: string,
     is_single_obj = false,
   ) {
-    super(obj, property, des);
-    this.is_single_obj = is_single_obj;
-    this.init_raw_value();
+    super(obj, property, des, is_single_obj);
   }
 
   /** 获取自身的时候不需要做什么事情 */
@@ -709,15 +742,7 @@ export class BasicPropertyHooker extends BasicHooker {
   /** 创建底层 Proxy 代理、赋值给 raw_value 并返回！ */
   override get_hooker() {
     const self = this;
-    // 实践中碰到的情况：
-    // 1. obj[property] 被 hook 过（居然没有监测到重复 hook），所以它具备 getter/setter
-    // 2. 而初始化的时候，如果具备 getter/setter 将不再设置 _raw_value 值
-    // 3. 因为调用 getter/setter 涉及到 this 的问题
-    if (self.raw_value === undefined) {
-      throw new cure_share.CureError(
-        "raw_value is undefined! maybe obj[property] is hooked",
-      );
-    }
+    this.before_get_hooker();
     const p = cure_tool.proxy_handler.create_proxy(self.raw_value as object, {
       get: function curemiracle_get_entry(...args: unknown[]) {
         const [target, property, receiver] = args as [

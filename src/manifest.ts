@@ -42,8 +42,21 @@ const manifest: Browser.runtime.ManifestV3 = {
       match_origin_as_fallback: true,
     },
   ],
-  permissions: ["tabs", "storage", "scripting", "webNavigation", "userScripts"],
+  permissions: [
+    "tabs",
+    "storage",
+    "scripting",
+    "webNavigation",
+    "webRequest",
+    "userScripts",
+  ],
   host_permissions: ["<all_urls>"],
+  web_accessible_resources: [
+    {
+      resources: ["static/curedebug.txt"],
+      matches: ["<all_urls>"],
+    },
+  ],
 };
 
 export function get_manifest(target: "chrome" | "firefox") {
