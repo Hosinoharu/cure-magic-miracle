@@ -373,13 +373,11 @@ export abstract class BasicHooker implements ICureHooker {
   /** 在 get_hooker 之前进行一些检查，子类必须在 get_hooker 之前调用它 */
   protected before_get_hooker() {
     this.#init_raw_value();
-    // 实践中碰到的情况：
-    // 1. obj[property] 被 hook 过（居然没有监测到重复 hook），所以它具备 getter/setter
-    // 2. 而初始化的时候，如果具备 getter/setter 将不再设置 _raw_value 值
-    // 3. 因为调用 getter/setter 涉及到 this 的问题
-    if (this.raw_value === undefined) {
+    // 如果具备 getter/setter，则直接 hook 它们了，raw_value 则为 undefined
+    // 所以这里只是确保一切正常
+    if (this.raw_value === undefined && !this.has_getter_or_setter) {
       throw new cure_share.CureError(
-        "raw_value is undefined! maybe obj[property] is hooked",
+        "raw_value is undefined, and no getter/setter",
       );
     }
   }
@@ -613,8 +611,6 @@ export class BasicPropertyHooker extends BasicHooker {
           : cure_tool.stringifier.to_json_string(arg);
     }
     const title = `${info}\n${s}`;
-    // const stack = cure_tool.stack_handler.curemiracle_get_caller_location(false, "", this._des);
-    // cure_console.logger.log_with_group(title, stack, true, true, operation);
     cure_console.logger.log_with_stack(title, operation);
   }
 
@@ -742,7 +738,7 @@ export class BasicPropertyHooker extends BasicHooker {
   /** 创建底层 Proxy 代理、赋值给 raw_value 并返回！ */
   override get_hooker() {
     const self = this;
-    this.before_get_hooker();
+    self.before_get_hooker();
     const p = cure_tool.proxy_handler.create_proxy(self.raw_value as object, {
       get: function curemiracle_get_entry(...args: unknown[]) {
         const [target, property, receiver] = args as [

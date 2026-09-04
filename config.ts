@@ -125,7 +125,9 @@ export function get_content_config(target: "main" | "isolated") {
           // 不优化变量名，方便调试
           minify: {
             mangle: false,
-            compress: true,
+            compress: {
+              dropDebugger: false,
+            },
           },
           keepNames: true,
         },

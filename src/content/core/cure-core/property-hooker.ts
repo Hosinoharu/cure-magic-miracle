@@ -14,7 +14,9 @@ export class PropertyValueHooker extends BasicHooker {
   }
 
   /** 在 hook 属性时本函数基本无用 */
-  protected get_hooker() {}
+  protected get_hooker() {
+    this.before_get_hooker();
+  }
 }
 
 /** hook 属性自身。
