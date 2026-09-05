@@ -17,7 +17,11 @@ const dirname = import.meta.dirname;
 /**
  * 用法 `vite --mode <value>`
  *
- * mode 为 `popup` 表示开发 chrome 插件的 popup page
+ * mode 取值
+ * - `popup` 表示开发 chrome 插件的 popup page
+ * - `options` 表示开发 chrome 插件的 options page
+ * - `side_panel` 表示开发 chrome 插件的 side panel
+ * mode
  */
 export default defineConfig(({ mode, command }) => {
   if (command === "build") throw new Error("vite.config.ts only for dev mode");
@@ -27,6 +31,9 @@ export default defineConfig(({ mode, command }) => {
   switch (mode) {
     case "popup":
       input = "./src/popup/index.html";
+      break;
+    case "side_panel":
+      input = "./src/side_panel/index.html";
       break;
     default:
       throw new Error("unknown mode value: " + mode);

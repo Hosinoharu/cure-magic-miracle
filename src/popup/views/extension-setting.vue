@@ -173,14 +173,12 @@ function open_options_page() {
 
 /** 在当前浏览器窗口中打开一个【全局侧边栏】 */
 async function open_side_page() {
-  // #cure-todo 暂时移除侧边栏功能
-  cure_notifacation("还未迁移该功能", "info");
-  // const window = await chrome.windows.getCurrent();
-  // if (!window.id) {
-  //     return ElMessage.error("open side panel failed");
-  // }
+  const window = await chrome.windows.getCurrent();
+  if (!window.id) {
+    return ElMessage.error("open side panel failed");
+  }
 
-  // chrome.sidePanel.open({ windowId: window.id });
+  chrome.sidePanel.open({ windowId: window.id });
 }
 
 onMounted(async () => {

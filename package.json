@@ -17,6 +17,7 @@
     "prebuild": "npm run format",
     "build-only": "jiti build.ts",
     "dev-popup": "vite --mode popup",
+    "dev-sidepanel": "vite --mode side_panel",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli *.{json,ts} src/**/*.{ts,vue}"

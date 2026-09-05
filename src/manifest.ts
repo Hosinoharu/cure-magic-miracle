@@ -23,6 +23,9 @@ const manifest: Browser.runtime.ManifestV3 = {
     service_worker: "./background/index.js",
     type: "module",
   },
+  side_panel: {
+    default_path: "./side_panel/index.html",
+  },
   content_scripts: [
     {
       matches: ["<all_urls>"],
@@ -49,6 +52,8 @@ const manifest: Browser.runtime.ManifestV3 = {
     "webNavigation",
     "webRequest",
     "userScripts",
+    "sidePanel",
+    "cookies",
   ],
   host_permissions: ["<all_urls>"],
   web_accessible_resources: [

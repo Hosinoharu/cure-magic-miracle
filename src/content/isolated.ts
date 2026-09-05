@@ -10,13 +10,34 @@ const default_style = `color:#38b48b`;
 // 蔷薇色
 const lite_warn_style = `background-color:#e9546b;color:white;font-weight:bold;`;
 
-const _logger = {
+const logger = {
   log(title: string, ...args: unknown[]) {
-    raw_log(`%c[CureMiracle-Content ${title}]`, default_style, ...args);
+    raw_log(`%c[CureMiracle ${title}]`, default_style, ...args);
   },
   warn(title: string, ...args: unknown[]) {
-    raw_warn(`%c[CureMiracle-Content ${title}]`, lite_warn_style, ...args);
+    raw_warn(`%c[CureMiracle ${title}]`, lite_warn_style, ...args);
   },
 };
 
 // #endregion
+
+chrome.runtime.onMessage.addListener(
+  (message: PCCMsgBody, _sender, _sendResponse) => {
+    switch (message.type) {
+      case "set-cookie":
+        const msg = message as PCCMsgBodySetCookie;
+        const cookie = msg.data.cookie.join("\n\tcookie => ");
+        logger.log(
+          "Set cookie",
+          "Request:",
+          msg.data.url,
+          "\n\tCookie =>",
+          cookie,
+        );
+        break;
+      default:
+        logger.warn("Unknown message type", message.type);
+        break;
+    }
+  },
+);
