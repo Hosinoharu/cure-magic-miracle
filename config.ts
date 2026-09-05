@@ -36,7 +36,7 @@ export function get_core_config() {
   const input = {
     background: path.join(manifest_dir, "background/index.ts"),
     popup: path.join(manifest_dir, "popup/index.html"),
-    // options: path.join(manifest_dir, "options/index.html"),
+    options: path.join(manifest_dir, "options/index.html"),
     side_panel: path.join(manifest_dir, "side_panel/index.html"),
   };
 

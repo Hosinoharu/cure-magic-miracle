@@ -26,6 +26,7 @@ const manifest: Browser.runtime.ManifestV3 = {
   side_panel: {
     default_path: "./side_panel/index.html",
   },
+  options_page: "./options/index.html",
   content_scripts: [
     {
       matches: ["<all_urls>"],
@@ -54,6 +55,7 @@ const manifest: Browser.runtime.ManifestV3 = {
     "userScripts",
     "sidePanel",
     "cookies",
+    "proxy",
   ],
   host_permissions: ["<all_urls>"],
   web_accessible_resources: [

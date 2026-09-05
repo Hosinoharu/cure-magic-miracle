@@ -166,9 +166,7 @@ function init_mahou() {
 // #endregion
 
 function open_options_page() {
-  // #cure-todo 暂时移除配置项功能
-  cure_notifacation("还未迁移该功能", "info");
-  // chrome.runtime.openOptionsPage();
+  chrome.runtime.openOptionsPage();
 }
 
 /** 在当前浏览器窗口中打开一个【全局侧边栏】 */

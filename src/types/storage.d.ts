@@ -8,6 +8,8 @@ type PersistentStorageStructure = {
   HOOK: HOOKSetting;
   /** 插件自身的配置项 */
   Extension: ExtensionSetting;
+  /** 浏览器代理相关的配置 */
+  NetProxy: NetProxySetting;
 };
 /** 持久化存储有哪些变量哟 */
 type PersistentVariables = keyof PersistentStorageStructure;
@@ -145,3 +147,40 @@ interface ExtensionSettingAPI extends ExVariableManagerAPI {
 }
 
 // #endregion 插件自身的存储结构
+
+// #region 浏览器代理的配置
+
+/** 存储浏览器代理的配置 */
+type NetProxySetting = {
+  /** 存储的服务器的配置 */
+  server: { [name: string]: ProxyServerSetting };
+  /** 存储的代理配置 */
+  proxy: { [name: string]: OneProxySettingRow };
+  /** 当前正使用的代理名称 */
+  current_proxy: string;
+};
+
+interface NetProxySettingAPI extends ExVariableManagerAPI {
+  /** 添加一个空的服务器配置项，返回它的 settingId */
+  add_empty_server(): Promise<ProxyServerSetting>;
+  /** 添加一个 proxy server。如果没有传入服务器配置，则表示**删除该现有的服务器配置** */
+  set_server(settingId: string, server?: ProxyServerSetting): Promise<void>;
+  /** 获取一个 proxy server 的配置 */
+  get_server(settingId: string): Promise<ProxyServerSetting | undefined>;
+  /** 获取所有 proxy server 的配置。如果没有，则创建一个默认的配置项保存以便于编辑 */
+  get_all_servers(): Promise<ProxyServerSetting[]>;
+  /** 添加一个空的服务器配置项，返回它的 settingId */
+  add_empty_proxy(): Promise<OneProxySettingRow>;
+  /** 添加一个代理配置。如果没有传入代理配置，则表示**删除该现有的代理配置** */
+  set_proxy(settingId: string, proxy?: OneProxySettingRow): Promise<void>;
+  /** 获取一个代理配置 */
+  get_proxy(settingId: string): Promise<OneProxySettingRow | undefined>;
+  /** 获取所有代理配置。如果没有，则创建一个默认的配置项保存以便于编辑 */
+  get_all_proxies(): Promise<OneProxySettingRow[]>;
+  /** 设置当前使用的代理。不传入名字则是清空它！ */
+  set_current_proxy(settingId?: string): Promise<void>;
+  /** 获取当前使用的代理 */
+  get_current_proxy(): Promise<string>;
+}
+
+// #endregion

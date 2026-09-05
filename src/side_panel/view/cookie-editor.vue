@@ -190,11 +190,12 @@ import {
   Upload,
 } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { onMounted, ref, onUnmounted, nextTick } from "vue";
+import { onMounted, ref, onUnmounted } from "vue";
 import { debounce } from "lodash-es";
 
 import AutoResizeInput from "../components/auto-resize-input.vue";
 import FakeSelect from "../components/fake-select.vue";
+import { generate_id, scroll_to_bottom } from "@/shared";
 
 /** 记录当前展示的、标签页的地址！ */
 const current_tab_url = ref("");
@@ -219,15 +220,6 @@ const data_formatter = new Intl.DateTimeFormat("zh-CN", {
   second: "2-digit",
 });
 
-/** 添加一行数据之后，滚动到底部，以方便编辑该行 */
-async function scroll_to_bottom() {
-  await nextTick();
-  window.scrollTo({
-    top: document.body.scrollHeight,
-    behavior: "smooth",
-  });
-}
-
 /** 将 cookie 的 expirationDate 从 Unix 时间戳形式转为【良好阅读性的格式】：年-月-日 时:分:秒
  *
  * 对于毫秒级时间戳会丢失精度：`new Date(1774837503.210134).getTime()` 将无法完整还原回去，丢失了毫秒
@@ -242,11 +234,6 @@ function format_expire(s: number) {
 function utc_to_expire(s: string) {
   const v = new Date(s).getTime();
   return v / 1000;
-}
-
-/** 用于配置项生成 id */
-function generate_id() {
-  return Date.now() + "_" + crypto.randomUUID().substring(0, 8);
 }
 
 /** 对当前的 cookie expire 进行格式化，转为阅读性更好的格式再进行展示

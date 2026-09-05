@@ -32,6 +32,9 @@ export default defineConfig(({ mode, command }) => {
     case "popup":
       input = "./src/popup/index.html";
       break;
+    case "options":
+      input = "./src/options/index.html";
+      break;
     case "side_panel":
       input = "./src/side_panel/index.html";
       break;
