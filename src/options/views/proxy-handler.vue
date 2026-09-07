@@ -3,7 +3,7 @@
 <template>
   <!-- 展示有哪些代理配置项 -->
   <section class="proxy-settings">
-    <el-table :data="all_proxies" border>
+    <el-table :data="all_proxies" border :row-class-name="proxy_row_class_name">
       <el-table-column prop="name" label="Proxy Name">
         <template #header>
           <span style="color: var(--cure-idol)">Proxy Name</span>
@@ -56,25 +56,18 @@
             />
             <el-popconfirm
               title="delete?"
-              v-if="curr_proxy !== scope.row.settingId"
-              @confirm="remove_proxy_setting(scope.$index)"
+              @confirm="remove_proxy_setting(scope.row as OneProxySettingRow)"
             >
               <template #reference>
-                <span class="el-button el-button--danger is-text is-has-bg">
-                  <el-icon>
-                    <Delete />
-                  </el-icon>
-                </span>
+                <el-button
+                  type="danger"
+                  :icon="Delete"
+                  :disabled="curr_proxy === scope.row.settingId"
+                  text
+                  bg
+                ></el-button>
               </template>
             </el-popconfirm>
-            <span
-              v-else
-              class="el-button el-button--danger is-text is-has-bg is-disabled"
-            >
-              <el-icon>
-                <Delete />
-              </el-icon>
-            </span>
           </el-button-group>
         </template>
       </el-table-column>
@@ -92,7 +85,11 @@
 
   <!-- 展示所有添加的服务器 -->
   <section class="proxy-servers">
-    <el-table :data="all_servers" border>
+    <el-table
+      :data="all_servers"
+      border
+      :row-class-name="server_row_class_name"
+    >
       <el-table-column prop="name" label="Server Name">
         <template #header>
           <span style="color: var(--cure-idol)">Server Name</span>
@@ -138,25 +135,18 @@
         <template #default="scope">
           <el-popconfirm
             title="delete?"
-            v-if="curr_server !== scope.row.settingId"
-            @confirm="remove_server(scope.$index)"
+            @confirm="remove_server(scope.row as ProxyServerSetting)"
           >
             <template #reference>
-              <span class="el-button el-button--danger is-text is-has-bg">
-                <el-icon>
-                  <Delete />
-                </el-icon>
-              </span>
+              <el-button
+                type="danger"
+                :icon="Delete"
+                :disabled="curr_server === scope.row.settingId"
+                text
+                bg
+              ></el-button>
             </template>
           </el-popconfirm>
-          <span
-            v-else
-            class="el-button el-button--danger is-text is-has-bg is-disabled"
-          >
-            <el-icon>
-              <Delete />
-            </el-icon>
-          </span>
         </template>
       </el-table-column>
     </el-table>
@@ -183,7 +173,7 @@
         class="selected-proxy"
         v-model="curr_proxy_name"
         @change="select_browser_proxy"
-        @clear="clear_browser_proxy"
+        @clear="cancel_browser_proxy"
         clearable
         placeholder="(・∀・) Select Current Proxy"
         style="width: 40%"
@@ -204,22 +194,16 @@
       <el-button-group>
         <el-popconfirm title="delete?" @confirm="remove_all_server">
           <template #reference>
-            <span class="el-button el-button--danger is-text is-has-bg">
-              <el-icon style="margin-right: 5px">
-                <Delete />
-              </el-icon>
+            <el-button type="danger" :icon="Delete" text bg>
               Delete Server
-            </span>
+            </el-button>
           </template>
         </el-popconfirm>
         <el-popconfirm title="delete?" @confirm="remove_all_proxy_setting">
           <template #reference>
-            <span class="el-button el-button--danger is-text is-has-bg">
-              <el-icon style="margin-right: 5px">
-                <Delete />
-              </el-icon>
+            <el-button type="danger" :icon="Delete" text bg>
               Delete Proxy
-            </span>
+            </el-button>
           </template>
         </el-popconfirm>
       </el-button-group>
@@ -253,56 +237,65 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import FakeSelect from "@/side_panel/components/fake-select.vue";
 import AutoResizeInput from "@/side_panel/components/auto-resize-input.vue";
-import { computed } from "vue";
 import { MagicStick, Delete, Edit, Plus } from "@element-plus/icons-vue";
-import { generate_id } from "@/shared";
-import { useProxy } from "../hooks/proxy";
+import useProxy from "../hooks/proxy";
 import { ElMessage } from "element-plus";
 
-const netproxy_manager = useProxy();
+const proxy_manager = useProxy();
 
 /** 当前所有的代理 */
-const all_proxies = netproxy_manager.all_proxies;
-// #cure-tip 测试ui
-if (__IS_DEV_UI__) {
-  all_proxies.value = [
-    {
-      settingId: "1",
-      name: "proxy-1",
-      mode: "fixed_servers",
-    },
-    {
-      settingId: "2",
-      name: "proxy-2",
-      mode: "pac_script",
-    },
-  ];
+const all_proxies = proxy_manager.all_proxies;
+/** 当前所有添加的服务器 */
+const all_servers = proxy_manager.all_servers;
+/** 当前使用的 proxy 的 id */
+const curr_proxy = proxy_manager.curr_proxy;
+const curr_server = proxy_manager.curr_server;
+
+/** 当前使用的 proxy 的名称 */
+const curr_proxy_name = ref("");
+/** 更新当前使用的 proxy 代理配置项的名称 */
+function update_curr_proxy_name(clear: boolean) {
+  if (clear) {
+    curr_proxy_name.value = "";
+    return;
+  }
+
+  const id = curr_proxy.value;
+  if (!id) return;
+
+  curr_proxy_name.value =
+    all_proxies.value.find(v => v.settingId === id)?.name || "";
 }
 
-/** 当前所有添加的服务器 */
-const all_servers = netproxy_manager.all_servers;
-// #cure-tip 测试ui
-if (__IS_DEV_UI__) {
-  all_servers.value = [
-    {
-      settingId: "1",
-      name: "mitmproxy",
-      host: "localhost",
-      port: "8080",
-      protocol: "http",
-    },
-    {
-      settingId: "2",
-      name: "server2",
-      host: "127.0.0.1",
-      port: "1080",
-      protocol: "socks5",
-    },
-  ];
-}
+/** 获取当前所有服务器的名称 */
+const server_names = computed(() => {
+  const names: Array<{ id: string; label: string; value: string }> = [];
+  for (const server of all_servers.value) {
+    if (!server.name) continue;
+    names.push({
+      id: server.settingId,
+      label: server.name,
+      value: server.settingId,
+    });
+  }
+  return names;
+});
+
+/** 获取当前所有代理配置项的名称 */
+const proxy_names = computed(() => {
+  const names: Array<{ id: string; name: string }> = [];
+  for (const proxy of all_proxies.value) {
+    if (!proxy.name) continue;
+    names.push({
+      id: proxy.settingId,
+      name: proxy.name,
+    });
+  }
+  return names;
+});
 
 /** 用于 ui 展示可选择的代理模式 */
 const proxy_modes = [
@@ -322,134 +315,70 @@ const server_schemes = [
   { id: "5", label: "SOCKS5", value: "socks5" },
 ];
 
-/** 获取当前所有服务器的名称 */
-const server_names = computed(() => {
-  const res: Array<{ id: string; label: string; value: string }> = [];
-  for (const setting of all_servers.value) {
-    setting.name &&
-      res.push({
-        id: setting.settingId,
-        label: setting.name,
-        value: setting.settingId,
-      });
-  }
-  return res;
-});
-/** 获取当前所有代理配置项的名称 */
-const proxy_names = computed(() => {
-  const res: Array<{ id: string; name: string }> = [];
-  for (const setting of all_proxies.value) {
-    setting.name &&
-      res.push({
-        id: setting.settingId,
-        name: setting.name,
-      });
-  }
-  return res;
-});
-
-/** 当前使用的 proxy 的 id */
-const curr_proxy = netproxy_manager.curr_proxy;
-const curr_server = netproxy_manager.curr_server;
-/** 当前使用的 proxy 的名称 */
-const curr_proxy_name = netproxy_manager.curr_proxy_name;
-
-/** 当选中一个 proxy 代理配置项作为浏览器代理时触发，在这里进行检查，最终设置浏览器的代理  */
-async function select_browser_proxy(settingId: string) {
-  // 点击清空按钮时会是这种情况
-  if (!settingId) return;
-
-  const msg = await netproxy_manager.check_selected_proxy(settingId);
-  if (msg) {
-    ElMessage.warning(msg);
-    return;
-  }
-
-  await netproxy_manager.set_browser_proxy(settingId);
+/** 选中一个 proxy 代理配置项作为浏览器代理  */
+async function select_browser_proxy(proxyId: string) {
+  if (!proxyId) return;
+  const ok = await proxy_manager.set_browser_proxy(proxyId);
+  update_curr_proxy_name(!ok);
 }
 
 /** 取消当前的代理设置 */
-async function clear_browser_proxy() {
-  await netproxy_manager.set_browser_proxy();
+async function cancel_browser_proxy() {
+  await proxy_manager.cancel_browser_proxy();
 }
 
 onMounted(async () => {
-  await netproxy_manager.init();
+  await proxy_manager.init();
 });
 
-// #region 添加一行
+function proxy_row_class_name({ row }: { row: OneProxySettingRow }) {
+  return row.settingId === curr_proxy.value ? "highlight-selected-row" : "";
+}
+
+function server_row_class_name({ row }: { row: OneProxySettingRow }) {
+  return row.settingId === curr_server.value ? "highlight-selected-row" : "";
+}
+
+// #region add
 
 async function add_proxy_setting() {
-  if (__IS_DEV_UI__) {
-    all_proxies.value.push({
-      settingId: generate_id(),
-      name: "",
-      mode: "direct",
-    });
-  } else {
-    netproxy_manager.add_empty_proxy();
-  }
+  await proxy_manager.add_empty_proxy();
 }
 
 async function add_server() {
-  if (__IS_DEV_UI__) {
-    all_servers.value.push({
-      settingId: generate_id(),
-      name: "",
-      host: "",
-      port: "",
-      protocol: "http", // 根据文档，这就是默认值
-    });
-  } else {
-    netproxy_manager.add_empty_server();
-  }
+  await proxy_manager.add_empty_server();
 }
 
-// #endregion 添加一行
+// #endregion
 
-// #region 删除一行或全部
+// #region delete
 
-async function remove_proxy_setting(index: number) {
-  all_proxies.value.splice(index, 1);
+async function remove_proxy_setting(p: OneProxySettingRow) {
+  await proxy_manager.del_proxy(p.settingId);
+  if (all_proxies.value.length == 0) {
+    add_proxy_setting();
+  }
 }
 
 async function remove_all_proxy_setting() {
-  if (!curr_proxy.value) {
-    all_proxies.value = [];
-    await add_proxy_setting();
-    return;
+  await proxy_manager.del_all_proxy();
+  if (all_proxies.value.length == 0) {
+    add_proxy_setting();
   }
-
-  const res = [];
-  for (const proxy of all_proxies.value) {
-    if (proxy.settingId === curr_proxy.value) {
-      res.push(proxy);
-    }
-  }
-  all_proxies.value = res;
-  ElMessage.success("deleted all proxy settings, only keep the current one");
 }
 
-async function remove_server(index: number) {
-  all_servers.value.splice(index, 1);
+async function remove_server(s: ProxyServerSetting) {
+  await proxy_manager.del_server(s.settingId);
+  if (all_servers.value.length == 0) {
+    add_server();
+  }
 }
 
-/** 删除所有服务器，并添加一个空配置。如果当前已经有使用的服务器，则不会删除 */
 async function remove_all_server() {
-  if (!curr_server.value) {
-    all_servers.value = [];
-    await add_server();
-    return;
+  await proxy_manager.del_all_server();
+  if (all_servers.value.length == 0) {
+    add_server();
   }
-
-  const res = [];
-  for (const server of all_servers.value) {
-    if (server.settingId === curr_server.value) {
-      res.push(server);
-    }
-  }
-  all_servers.value = res;
-  ElMessage.success("deleted all servers, only keep the current one");
 }
 
 // #endregion
@@ -488,10 +417,13 @@ async function edit_ok() {
   }
 }
 
-//  #endregion 编辑代理配置项
+//  #endregion
 
 async function aha() {
-  ElMessage.info("Aha ( ºΔº )  魔法少女正在打怪悄悄升级~~");
+  ElMessage.info({
+    message: "Aha ( ºΔº )  魔法少女正在打怪悄悄升级~~",
+    grouping: true,
+  });
 }
 </script>
 
@@ -532,5 +464,12 @@ async function aha() {
 
 .selected-proxy {
   margin: 0 50px;
+}
+</style>
+
+<style>
+/** 当前起作用的 proxy、server 行需要高亮 */
+.el-table .highlight-selected-row {
+  background: var(--el-color-info-light-7);
 }
 </style>

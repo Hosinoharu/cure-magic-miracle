@@ -83,6 +83,16 @@ class NetProxySettingManager
     return res;
   }
 
+  async set_all_servers(servers: ProxyServerSetting[]) {
+    await this.init();
+    const data = {} as typeof this.temp.server;
+    for (const server of servers) {
+      data[server.settingId] = server;
+    }
+    this.temp.server = data;
+    await this.save();
+  }
+
   async add_empty_proxy(): Promise<OneProxySettingRow> {
     await this.init();
     const id = generate_id();
@@ -117,6 +127,16 @@ class NetProxySettingManager
       res.push(t);
     }
     return res;
+  }
+
+  async set_all_proxies(proxies: OneProxySettingRow[]) {
+    await this.init();
+    const data = {} as typeof this.temp.proxy;
+    for (const proxy of proxies) {
+      data[proxy.settingId] = proxy;
+    }
+    this.temp.proxy = data;
+    await this.save();
   }
 
   async set_current_proxy(settingId?: string): Promise<void> {

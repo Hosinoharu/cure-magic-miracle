@@ -156,7 +156,7 @@ type NetProxySetting = {
   server: { [name: string]: ProxyServerSetting };
   /** 存储的代理配置 */
   proxy: { [name: string]: OneProxySettingRow };
-  /** 当前正使用的代理名称 */
+  /** 当前正使用的代理 ID */
   current_proxy: string;
 };
 
