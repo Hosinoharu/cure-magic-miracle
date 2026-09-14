@@ -12,24 +12,6 @@
 
 ---
 
-# Usage
-
-魔法少女正在努力休息中. . .`♡～(>᎑<๑)`，具体见 [cure-magic-miracle-wiki](https://github.com/Hosinoharu/cure-magic-miracle/wiki)
-
-# Dev
-
-```powershell
-git clone https://github.com/Hosinoharu/cure-magic-miracle
-cd cure-magic-miracle
-
-# 安装依赖并构建
-npm run install
-npm run build
-
-# 调试 UI
-npm run dev-popup
-```
-
 # Attribution
 
 [Extension Icon - Flaticon](https://www.flaticon.com/free-icon/magic-wand_10431804)
