@@ -1,5 +1,5 @@
-import Proxy from "../views/proxy-handler.vue";
-import ResReq from "../views/res-req.vue";
+import ProxyHandler from "../views/proxy-handler.vue";
+import NetRequest from "../views/net-request.vue";
 
 import { createRouter, createWebHashHistory } from "vue-router";
 
@@ -8,17 +8,17 @@ const ruoter = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/reqres",
+      redirect: "/net-request",
     },
     {
-      path: "/reqres",
-      name: "reqres",
-      component: ResReq,
+      path: "/net-request",
+      name: "net-request",
+      component: NetRequest,
     },
     {
-      path: "/proxy",
-      name: "proxy",
-      component: Proxy,
+      path: "/proxy-handler",
+      name: "proxy-handler",
+      component: ProxyHandler,
     },
   ],
 });

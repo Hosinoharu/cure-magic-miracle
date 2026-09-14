@@ -54,8 +54,6 @@ class ProxyManager {
 
   /** 读取 chrome.storage 获取配置项 */
   async init() {
-    this.#listen_change();
-
     if (__IS_DEV_UI__) {
       this.#all_proxies.value = [
         {
@@ -86,17 +84,27 @@ class ProxyManager {
           protocol: "socks5",
         },
       ];
+
+      this.#listen_change();
       return;
     }
 
     this.#all_proxies.value = await netproxy_manager.get_all_proxies();
     this.#all_servers.value = await netproxy_manager.get_all_servers();
     this.#curr_proxy.value = await netproxy_manager.get_current_proxy();
+    this.#listen_change();
   }
 
   /** 监听配置项变化，即时存储到 chrome.storage 中 */
   #listen_change() {
-    const debounce_time = 500;
+    const debounce_time = 1000;
+
+    function success_saved() {
+      ElMessage.success({
+        message: "The changes have been saved",
+        grouping: true,
+      });
+    }
 
     watch(
       this.#all_proxies,
@@ -106,6 +114,7 @@ class ProxyManager {
         if (!__IS_DEV_UI__) {
           await netproxy_manager.set_all_proxies(new_value);
         }
+        success_saved();
       }, debounce_time),
       { deep: true },
     );
@@ -118,6 +127,7 @@ class ProxyManager {
         if (!__IS_DEV_UI__) {
           await netproxy_manager.set_all_servers(new_value);
         }
+        success_saved();
       }, debounce_time),
       { deep: true },
     );
@@ -135,8 +145,7 @@ class ProxyManager {
     let ok = true;
     try {
       await netproxy_manager.set_current_proxy(proxyId);
-      const msg = proxyId ? "Set proxy success" : "Cancelled";
-      ElMessage.success(msg);
+      ElMessage.success("Set proxy success");
       this.#curr_proxy.value = proxyId;
     } catch (e) {
       const msg = "Error: " + (e as Error).message;

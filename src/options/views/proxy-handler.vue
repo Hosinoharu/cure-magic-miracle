@@ -55,7 +55,7 @@
               bg
             />
             <el-popconfirm
-              title="delete?"
+              title="really?"
               @confirm="remove_proxy_setting(scope.row as OneProxySettingRow)"
             >
               <template #reference>
@@ -134,7 +134,7 @@
       <el-table-column width="70">
         <template #default="scope">
           <el-popconfirm
-            title="delete?"
+            title="really?"
             @confirm="remove_server(scope.row as ProxyServerSetting)"
           >
             <template #reference>
@@ -192,14 +192,14 @@
         </template>
       </el-select>
       <el-button-group>
-        <el-popconfirm title="delete?" @confirm="remove_all_server">
+        <el-popconfirm title="really?" @confirm="remove_all_server">
           <template #reference>
             <el-button type="danger" :icon="Delete" text bg>
               Delete Server
             </el-button>
           </template>
         </el-popconfirm>
-        <el-popconfirm title="delete?" @confirm="remove_all_proxy_setting">
+        <el-popconfirm title="really?" @confirm="remove_all_proxy_setting">
           <template #reference>
             <el-button type="danger" :icon="Delete" text bg>
               Delete Proxy
@@ -241,7 +241,7 @@ import { computed, nextTick, onMounted, ref } from "vue";
 import FakeSelect from "@/side_panel/components/fake-select.vue";
 import AutoResizeInput from "@/side_panel/components/auto-resize-input.vue";
 import { MagicStick, Delete, Edit, Plus } from "@element-plus/icons-vue";
-import useProxy from "../hooks/proxy";
+import useProxy from "../hooks/proxy-handler";
 import { ElMessage } from "element-plus";
 
 const proxy_manager = useProxy();
@@ -329,6 +329,7 @@ async function cancel_browser_proxy() {
 
 onMounted(async () => {
   await proxy_manager.init();
+  update_curr_proxy_name(false);
 });
 
 function proxy_row_class_name({ row }: { row: OneProxySettingRow }) {

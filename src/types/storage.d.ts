@@ -10,6 +10,10 @@ type PersistentStorageStructure = {
   Extension: ExtensionSetting;
   /** 浏览器代理相关的配置 */
   NetProxy: NetProxySetting;
+  /** 插件存储的请求规则。存储的都是动态规则信息 */
+  NetRequestRule: SavedNetRules;
+  /** 存储会话规则，浏览器关闭时失效 */
+  SessionNetRequestRule: SavedNetRules;
 };
 /** 持久化存储有哪些变量哟 */
 type PersistentVariables = keyof PersistentStorageStructure;
@@ -79,7 +83,7 @@ interface HOOKSettingAPI extends ExVariableManagerAPI {
   /** 获取某个 host 的配置项。如果配置项不存在，则不返回默认配置项哟 */
   get_host_setting(host: string): Promise<OneSettingItem | undefined>;
   /** 返回一个默认的配置项，也就是所有**网站的默认配置项** */
-  get_default_setting(): OneSettingItem;
+  get_default_hook_setting(): OneSettingItem;
   /** 根据网站 host、标签页 tabid 查找配置项，如果没找到就返回默认的配置项 */
   get_setting(host: string, tabId: number): Promise<OneSettingItem>;
 
@@ -181,6 +185,51 @@ interface NetProxySettingAPI extends ExVariableManagerAPI {
   set_current_proxy(settingId?: string): Promise<void>;
   /** 获取当前使用的代理 */
   get_current_proxy(): Promise<string>;
+}
+
+// #endregion
+
+type MyCookie = {
+  /** 因为 vue 的特点，所以需要给每个 cookie 新增一个 id 哟 */
+  cookieId?: string;
+  /** 格式化后的 expires 值，如果为空则表示 `Session cookie` 哟 */
+  expires?: string;
+  /** 是否折叠内容，不显示 cookie 的详细信息 */
+  collapse?: boolean;
+} & chrome.cookies.Cookie;
+
+// #region declarativeNetRequest规则的存储结构
+
+/** 存储插件添加的、配置请求头、响应头、响应体、拦截请求等配置信息 */
+type OneNetRule = {
+  /** 对应到插件已保存的 declarativeNetRequest 规则 id，通过它可以找到对应的规则进行删除哟 */
+  ruleId?: number;
+  /** 要处理请求头等等的目标 */
+  data: BaseRuleData;
+};
+
+/** 在配置了一条规则之后，需要保存到 storage 中。如果规则直接用数组存储，将来查找都很浪费时间。
+ * 所以使用对象来存储每一条规则信息，key 就是规则创建的时间戳。
+ *
+ * 为了区分 declareNetRequestRule 中的规则 ID，此处使用 settingId 来表示
+ */
+type SavedNetRules = { [settingId: string]: OneNetRule };
+
+/** 使用 declarativeNetRequest API 的动态规则、还是会话规则 */
+type RuleMode = "dynamic" | "session";
+
+/** 操作保存的、规则配置项的 API */
+interface NetRequstRuleAPI extends ExVariableManagerAPI {
+  /** 添加一个匹配规则。如果规则存在则覆盖，同时应用到 declarativeNetRequest 规则*/
+  add_rule(data: BaseRuleData): Promise<void>;
+  /** 删除多条规则，以及 declarativeNetRequest 中的规则 */
+  del_rules(settingIds: string[]): Promise<void>;
+  /** 添加一条空白 storage 规则，并返回它 */
+  add_empty_rule(): Promise<BaseRuleData>;
+  /** 获取所有保存的 storage 规则 */
+  get_all_rules(): Promise<SavedNetRules>;
+  /** 清空所有保存的 storage 规则，以及 declarativeNetRequest 中的规则 */
+  del_all_rules(): Promise<void>;
 }
 
 // #endregion

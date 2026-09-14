@@ -56,6 +56,7 @@ const manifest: Browser.runtime.ManifestV3 = {
     "sidePanel",
     "cookies",
     "proxy",
+    "declarativeNetRequest",
   ],
   host_permissions: ["<all_urls>"],
   web_accessible_resources: [

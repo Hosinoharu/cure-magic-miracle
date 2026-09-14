@@ -106,7 +106,7 @@ class HookSettingManager
     // 此处不需要保存默认配置到 Tab 中。因为如果其它地方不进行 `设置新的配置项`，
     // 那么不保存该配置项根本不影响 —— 反正得到的配置项是相同的
     // 但一旦有地方设置了配置项，就会读取本默认配置项进行覆盖，然后保存哟
-    return v ? structuredClone(v) : this.get_default_setting();
+    return v ? structuredClone(v) : this.get_default_hook_setting();
   }
 
   async get_host_setting(host: string) {
@@ -141,7 +141,7 @@ class HookSettingManager
     return Object.getOwnPropertyNames(this.temp.Saved.names);
   }
 
-  get_default_setting() {
+  get_default_hook_setting() {
     // 需要返回副本啦！
     return structuredClone(this.#default_hook_setting);
   }

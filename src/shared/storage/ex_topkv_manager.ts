@@ -24,8 +24,14 @@ export class ExTopKVManager<Structure, VType extends KVObject> {
   readonly #listener = this.#listen_func.bind(this);
   /** 操作的配置项名称 */
   readonly #name: keyof Structure;
+  protected get name() {
+    return this.#name;
+  }
   /** 默认配置项，当配置项清空时有用！ */
-  protected readonly default_setting: VType;
+  readonly #default_setting: VType;
+  protected get default_setting() {
+    return this.#default_setting as Readonly<VType>;
+  }
 
   /**
    *
@@ -42,7 +48,7 @@ export class ExTopKVManager<Structure, VType extends KVObject> {
   ) {
     this.logger = new Logger(log_prefix);
     this.#name = name;
-    this.default_setting = default_setting;
+    this.#default_setting = default_setting;
     this.#manager = new TopKVManager(name, persistent);
 
     this.init();
@@ -58,7 +64,7 @@ export class ExTopKVManager<Structure, VType extends KVObject> {
 
     const target = changes[t.#name as string];
     if (target) {
-      t.temp = (target.newValue || t.default_setting) as VType;
+      t.temp = (target.newValue || t.#default_setting) as VType;
       this.logger.log_with_logo("☆", `${namespace}Storage onChanged`, changes);
     }
   }
@@ -78,7 +84,7 @@ export class ExTopKVManager<Structure, VType extends KVObject> {
   /** 获取当前的配置项 */
   async init() {
     if (this.#initialized) return;
-    await this.#manager.init(this.default_setting);
+    await this.#manager.init(this.#default_setting);
     this.temp = (await this.#manager.get())!;
     this.#initialized = true;
   }
@@ -86,5 +92,10 @@ export class ExTopKVManager<Structure, VType extends KVObject> {
   /** 将当前缓存的配置项存储到 chrome.storage 中 */
   async save() {
     await this.#manager.set(this.temp);
+  }
+
+  protected copy_default_setting() {
+    // 需要返回副本啦！
+    return structuredClone(this.#default_setting);
   }
 }

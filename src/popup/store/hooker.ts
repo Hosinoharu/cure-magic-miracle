@@ -125,7 +125,7 @@ export const useCureSettingStore = defineStore("cure_setting", () => {
     }
 
     // 从默认配置项中取值进行初始化咯
-    const default_setting = hook_setting.get_default_setting();
+    const default_setting = hook_setting.get_default_hook_setting();
     for (const [key, _value] of Object.entries(default_setting.cure_setting)) {
       if (key !== "enable_hook") {
         // @ts-ignore
