@@ -13,9 +13,6 @@ import cure from "./cure";
 import { BlobStorage } from "../cure-storage";
 import { expose_name } from "@/shared";
 
-/*
-    重新调整 Hook Worker 的逻辑，具体见 https://github.com/CureMiracleSeries/CureMiracleS1/issues/10
-*/
 export function hook_worker_03() {
   /** 记录 js 格式的 blob 与其生成的 url 的关系。
    *
@@ -135,7 +132,7 @@ export function hook_worker_03() {
         hooker_setting: cure.raw_hooker_setting,
       };
       const setting_src = cure.tool.stringifier.to_string(setting);
-      const init_code = `;globalThis.${expose_name}.tool.msg.init_all_setting(${setting_src});`;
+      const init_code = `;globalThis.${expose_name}.tool.msg_handler.init_all_setting(${setting_src});`;
       cure.share.ArrayFunc.push(worker_code, insert_code, init_code);
     } else {
       cure.share.ArrayFunc.push(worker_code, light_insert_code);
@@ -146,7 +143,7 @@ export function hook_worker_03() {
 
     let final_blob_params: BlobPart[] | undefined;
     const raw_blob_params = get_raw_blob_param(url);
-    // 没有找到该 url 对应的 blob 参数，则直接使用同步请求来获取
+    // 没有找到该 url 对应的 blob 参数，那么请求的是外部的 js 文件
     if (raw_blob_params === undefined) {
       // 传入的可能是 x/y.js 这样的情况，需要拼接成完整的路径
       if (
@@ -155,11 +152,8 @@ export function hook_worker_03() {
       ) {
         url = new URL(url, location.origin).href;
       }
-      // 同步请求文件内容并插入，而不是动态执行，因为动态执行无法看到 worker 内部的代码呀！
-      const run_code = cure.tool.normal.fetch_sync(url);
-      cure.share.ArrayFunc.push(worker_code, run_code);
-
-      final_blob_params = worker_code;
+      const run_code = `;importScripts("${url}");`;
+      final_blob_params = [...worker_code, run_code];
     }
     // 构建全新的 blob 对象
     else {
